@@ -3,10 +3,19 @@
 //  calculator_Codebase
 //
 //  Created by 단예진 on 6/25/24.
-//
+
 
 import UIKit
 import SnapKit
+
+//코드베이스 과제용
+
+/*
+ 버튼 생성: 버튼들을 배열로 만들어서 반복적으로 생성할 수 있도록 합니다.
+ 스택뷰 생성: 각 행의 버튼들을 담을 수 있는 UIStackView를 생성합니다.
+ 스택뷰를 수직으로 배치: 계산기의 버튼 배열을 수직으로 쌓을 수 있는 UIStackView를 생성합니다.
+ 버튼 액션 설정: 각 버튼에 대한 액션 메서드를 정의하고 버튼에 연결
+ */
 
 
 #Preview {
@@ -14,23 +23,11 @@ import SnapKit
 }
 
 
+
 class ViewController: UIViewController {
     
-    //숫자, 연산자, AC -> horizontalStack -> 4줄의 verticalStack
-    /* [AC +/- % /] Fill Equallly
-     [7, 8, 9, X] Fill Equallly
-     [4, 5, 6, -] Fill Equallly
-     [1, 2, 3, +] Fill Equallly
-     [0, . =]     Fill Proportionally?*/
-    
-    //한줄의 HorizontalStack 만들기
-    //네줄의 VerticalStack으로 합치기
-    //네모버튼을 원으로 만들기
-    
-    let label = UILabel()
-    let horizontalStackView = UIStackView()
-    let verticalStackView = UIStackView()
-    let button = UIButton()
+    //label
+    var label = UILabel()
     
     
     override func viewDidLoad() {
@@ -41,80 +38,86 @@ class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .black
-            
-            //label 속성
-            label.text = "12345"
-            label.textColor = .white
-            label.textAlignment = .right
-            label.font = .boldSystemFont(ofSize: 60)
-            label.translatesAutoresizingMaskIntoConstraints = false
         
+        //Label Configuration
+        label.text = "12345"
+        label.textColor = .white
+        label.textAlignment = .right
+        label.font = UIFont.boldSystemFont(ofSize: 60)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        //label view 생성
+        view.addSubview(label)
         
-        
-            //UIButton 속성
-            button.setTitle("1", for: .normal)
-            button.setTitleColor(.white, for: .normal)
-            button.backgroundColor = UIColor(red: 58/255, green: 58/255, blue: 58/255, alpha: 1.0)
-            button.layer.cornerRadius = 40
-            button.translatesAutoresizingMaskIntoConstraints = false
-        
-            //horizontalStackView 속성
-    
-            
-            //verticalStackView 속성
-            verticalStackView.axis = .vertical
-            verticalStackView.backgroundColor = .white
-            verticalStackView.spacing = 10
-            verticalStackView.distribution = .fillEqually
-            verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-            
-            
-            
-            
-            //뷰 생성
-            [label, button, verticalStackView]
-                .forEach { view.addSubview($0) }
-            
-            //label 제약조건
-            label.snp.makeConstraints {
-                $0.height.equalTo(100)
-                $0.centerX.equalToSuperview().offset(30)
-                $0.top.equalToSuperview().offset(200)
-            }
-            
-            //button 제약조건
-            button.snp.makeConstraints {
-                $0.width.height.equalTo(80)
-                $0.center.equalToSuperview()
-            }
-            
-            //verticalStackView 제약조건
-            verticalStackView.snp.makeConstraints {
-                $0.width.equalTo(350)
-                $0.top.equalTo(label.snp.bottom).offset(60)
-                $0.centerX.equalToSuperview()
-            }
-            //        - top = label 의 bottom 으로 부터 60 떨어지도록.
-            
-            
+        //label Constraints
+        label.snp.makeConstraints {
+            $0.height.equalTo(100)
+            $0.centerY.equalTo(200)
+            $0.leading.equalToSuperview().offset(30)
+            $0.trailing.equalToSuperview().inset(30)
             
         }
         
+        
+        // Button titles
+        let buttonTitles = [
+            ["AC", "+/-", "%", "/"],
+            ["7", "8", "9", "x"],
+            ["4", "5", "6", "-"],
+            ["1", "2", "3", "+"],
+            ["0", ".", "="]
+        ]
+        
+        
+        //VerticalStackView Configuration
+        let verticalStackView = UIStackView()
+        verticalStackView.axis = .vertical
+        verticalStackView.backgroundColor = .black
+        verticalStackView.spacing = 10
+        verticalStackView.distribution = .fill
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        //VerticalStackView view 생성
+        view.addSubview(verticalStackView)
+        
+        //verticalStackView Constraints
+        
+        verticalStackView.snp.makeConstraints {
+            $0.width.equalTo(350)
+            $0.top.equalTo(label.snp.bottom).offset(60)
+            $0.centerX.equalToSuperview()
+        }
+        
+        // 버튼 생성 및 배치
+        for rowTitles in buttonTitles {
+            let rowStackView = UIStackView()
+            rowStackView.axis = .horizontal
+            rowStackView.spacing = 10
+            rowStackView.distribution = .fill
+            rowStackView.translatesAutoresizingMaskIntoConstraints = false
+            
+            for title in rowTitles {
+                let button = UIButton(type: .system)
+                if let titleLabel = button.titleLabel {
+                    titleLabel.font = UIFont.boldSystemFont(ofSize: 30)
+                }
+                if ["AC", "+/-", "%", "+", "-", "x", "/", "-", ".", "="].contains(title) {
+                    button.backgroundColor = .orange
+                } else {
+                    button.backgroundColor = .gray
+                }
+                button.setTitle(title, for: .normal)
+                button.setTitleColor(.white, for: .normal)
+                
+                button.layer.cornerRadius = 40
+                rowStackView.addArrangedSubview(button)
+                button.snp.makeConstraints {
+                    $0.width.height.equalTo(80)
+                    
+                    rowStackView.addArrangedSubview(button)
+                }
+                
+                verticalStackView.addArrangedSubview(rowStackView)
+            }
+        }
     }
-    
-    //let buttonTitles = [
-    //    ["AC", "+/-", "%", "/"],
-    //    ["7", "8", "9", "X"],
-    //    ["4", "5", "6", "-"],
-    //    ["1", "2", "3", "+"],
-    //    ["0", ".", "="]
-    //]
-    //
-    //for row in buttonTitles {
-    //    let horizontalStackView = UIStackView()
-    //    horizontalStackView.axis = .horizontal
-    //    horizontalStackView.backgroundColor = .black
-    //    horizontalStackView.spacing = 10
-    //    horizontalStackView.distribution = .fillEqually
-    //}
-
+}
